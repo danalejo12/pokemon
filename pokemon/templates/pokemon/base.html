@@ -1,0 +1,44 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block titulo %}Pokedex{% endblock %} | Pokedex</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar">
+        <a href="{% url 'inicio' %}" class="navbar-brand">
+            <span class="pokeball-mini"></span>
+            POKEDEX
+        </a>
+        <ul class="nav-links">
+            <li><a href="{% url 'inicio' %}">🏠 Inicio</a></li>
+            <li><a href="{% url 'pokemon-lista' %}">📋 Todos los Pokémon</a></li>
+            <li><a href="{% url 'pokemon-crear' %}">➕ Atrapar</a></li>
+            <li><a href="{% url 'admin:index' %}">⚙️ Admin</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li class="message {{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        {% block contenido %}{% endblock %}
+    </div>
+
+    <footer>
+        <p>Pokédex 🐍 | Los Pokémon son marcas de Nintendo/Game Freak</p>
+    </footer>
+
+    <script src="{% static 'js/app.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

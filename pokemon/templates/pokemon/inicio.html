@@ -1,0 +1,71 @@
+{% extends "pokemon/base.html" %}
+
+{% block titulo %}Inicio{% endblock %}
+
+{% block contenido %}
+<section class="hero">
+    <h1>¡POKÉDEX!</h1>
+    <p>Explora, atrapa y aprende sobre todos los Pokémon. Tu aventura comienza ahora.</p>
+    <div class="hero-stats">
+        <div class="hero-stat">
+            <div class="num">{{ total_pokemones }}</div>
+            <div class="label">Pokémon registrados</div>
+        </div>
+        <div class="hero-stat">
+            <div class="num">18</div>
+            <div class="label">Tipos</div>
+        </div>
+        <div class="hero-stat">
+            <div class="num">100%</div>
+            <div class="label">Entrenadores</div>
+        </div>
+    </div>
+    <br>
+    <a href="{% url 'pokemon-lista' %}" class="btn btn-primary">🔍 Explorar la Pokédex</a>
+    <a href="{% url 'pokemon-crear' %}" class="btn btn-outline">➕ Registrar Pokémon</a>
+</section>
+
+<h2 style="text-align:center; margin-top:2rem;">⭐ Pokémon destacados</h2>
+
+<div class="grid-pokemon">
+    {% for p in destacados %}
+    <article class="card-pokemon">
+        <span class="numero">#{{ p.numero|stringformat:"03d" }}</span>
+        {% if p.imagen_url %}
+            <img src="{{ p.imagen_url }}" alt="{{ p.nombre }}" loading="lazy"
+                 onerror="this.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/{{ p.numero }}.png'">
+        {% else %}
+            <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/{{ p.numero }}.png"
+                 alt="{{ p.nombre }}" loading="lazy">
+        {% endif %}
+        <h3>{{ p.nombre }}</h3>
+        <div>
+            <span class="badge-tipo {{ p.tipo }}">{{ p.tipo }}</span>
+            {% if p.tipo_secundario %}
+            <span class="badge-tipo {{ p.tipo_secundario }}">{{ p.tipo_secundario }}</span>
+            {% endif %}
+        </div>
+        <div class="stats-mini">
+            <span>HP <strong>{{ p.hp }}</strong></span>
+            <span>⚔️ <strong>{{ p.ataque }}</strong></span>
+            <span>🛡️ <strong>{{ p.defensa }}</strong></span>
+            <span>⚡ <strong>{{ p.velocidad }}</strong></span>
+        </div>
+        <a href="{% url 'pokemon-detalle' p.pk %}" class="btn btn-primary btn-small">Ver ficha</a>
+    </article>
+    {% empty %}
+    <p style="text-align:center; color:rgba(255,255,255,0.7);">
+        Aún no hay Pokémon. ¡<a href="{% url 'pokemon-crear' %}" style="color:#FFCB05;">Atrapa el primero!</a>
+    </p>
+    {% endfor %}
+</div>
+
+<h2 style="text-align:center; margin-top:3rem;">🔥 Explora por tipo</h2>
+<div style="display:flex; flex-wrap:wrap; gap:0.6rem; justify-content:center; margin-top:1rem;">
+    {% for tipo in tipos %}
+    <a href="{% url 'pokemon-lista' %}?tipo={{ tipo }}" class="badge-tipo {{ tipo }}" style="text-decoration:none; padding:0.5rem 1.1rem;">
+        {{ tipo }}
+    </a>
+    {% endfor %}
+</div>
+{% endblock %}

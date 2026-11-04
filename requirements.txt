@@ -1,0 +1,3 @@
+# Dependencias del proyecto Pokedex
+# Instala con: pip install -r requirements.txt
+Django==6.1.3

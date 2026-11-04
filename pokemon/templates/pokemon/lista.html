@@ -1,0 +1,79 @@
+{% extends "pokemon/base.html" %}
+{% load static %}
+
+{% block titulo %}Lista de Pokémon{% endblock %}
+
+{% block contenido %}
+<h2 style="text-align:center;">📋 Pokédex completa</h2>
+
+<form method="get" class="busqueda">
+    <input type="text" name="q" value="{{ q }}" placeholder="🔍 Buscar por nombre...">
+    <select name="tipo">
+        <option value="">Todos los tipos</option>
+        {% for tipo in tipos %}
+        <option value="{{ tipo }}" {% if tipo == tipo_seleccionado %}selected{% endif %}>
+            {{ tipo }}
+        </option>
+        {% endfor %}
+    </select>
+    <button type="submit" class="btn btn-primary">Buscar</button>
+    <a href="{% url 'pokemon-lista' %}" class="btn btn-outline btn-small">Limpiar</a>
+</form>
+
+<p style="color:rgba(255,255,255,0.7); margin-bottom:1rem;">
+    {{ paginator.count }} Pokémon{{ paginator.count|pluralize }} encontrado{{ paginator.count|pluralize:"s" }}
+</p>
+
+<div class="grid-pokemon">
+    {% for p in pokemones %}
+    <article class="card-pokemon">
+        <span class="numero">#{{ p.numero|stringformat:"03d" }}</span>
+        {% if p.imagen_url %}
+            <img src="{{ p.imagen_url }}" alt="{{ p.nombre }}" loading="lazy"
+                 onerror="this.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/{{ p.numero }}.png'">
+        {% else %}
+            <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/{{ p.numero }}.png"
+                 alt="{{ p.nombre }}" loading="lazy">
+        {% endif %}
+        <h3>{{ p.nombre }}</h3>
+        <div>
+            <span class="badge-tipo {{ p.tipo }}">{{ p.tipo }}</span>
+            {% if p.tipo_secundario %}
+            <span class="badge-tipo {{ p.tipo_secundario }}">{{ p.tipo_secundario }}</span>
+            {% endif %}
+        </div>
+        <div class="stats-mini">
+            <span>HP <strong>{{ p.hp }}</strong></span>
+            <span>⚔️ <strong>{{ p.ataque }}</strong></span>
+            <span>🛡️ <strong>{{ p.defensa }}</strong></span>
+            <span>⚡ <strong>{{ p.velocidad }}</strong></span>
+        </div>
+        <div style="display:flex; gap:0.5rem; justify-content:center; flex-wrap:wrap;">
+            <a href="{% url 'pokemon-detalle' p.pk %}" class="btn btn-primary btn-small">👁️ Ver</a>
+            <a href="{% url 'pokemon-editar' p.pk %}" class="btn btn-outline btn-small" style="color:#1a1a2e; border-color:#ccc;">✏️ Editar</a>
+            <a href="{% url 'pokemon-eliminar' p.pk %}" class="btn btn-danger btn-small">🗑️ Liberar</a>
+        </div>
+    </article>
+    {% empty %}
+    <p style="text-align:center; color:rgba(255,255,255,0.7); grid-column:1/-1;">
+        😢 No se encontraron Pokémon. ¡Prueba otro nombre o <a href="{% url 'pokemon-crear' %}" style="color:#FFCB05;">atrapa uno nuevo</a>!
+    </p>
+    {% endfor %}
+</div>
+
+{% if is_paginated %}
+<nav class="paginacion">
+    {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}{% if q %}&q={{ q }}{% endif %}{% if tipo_seleccionado %}&tipo={{ tipo_seleccionado }}{% endif %}">← Anterior</a>
+    {% endif %}
+    <span class="pagina-actual">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{% if q %}&q={{ q }}{% endif %}{% if tipo_seleccionado %}&tipo={{ tipo_seleccionado }}{% endif %}">Siguiente →</a>
+    {% endif %}
+</nav>
+{% endif %}
+
+<div style="text-align:center; margin-top:2rem;">
+    <a href="{% url 'pokemon-crear' %}" class="btn btn-primary">➕ Registrar un nuevo Pokémon</a>
+</div>
+{% endblock %}

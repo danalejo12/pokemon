@@ -1,0 +1,60 @@
+{% extends "pokemon/base.html" %}
+{% load static %}
+
+{% block titulo %}{{ titulo }}{% endblock %}
+
+{% block contenido %}
+<div class="form-card">
+    <h2>{{ titulo }}</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+        <div class="form-group">
+            {% for error in form.non_field_errors %}
+            <p style="color:#ffb3a0;">{{ error }}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% for field in form %}
+        <div class="form-group">
+            {{ field.label_tag }}
+            {{ field }}
+            {% if field.help_text %}
+                <p class="helptext">{{ field.help_text }}</p>
+            {% endif %}
+            {% if field.errors %}
+                <ul class="errorlist">
+                    {% for error in field.errors %}
+                    <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+        {% endfor %}
+
+        <div style="display:flex; gap:0.8rem; margin-top:1.5rem;">
+            <button type="submit" class="btn btn-primary" style="flex:1; justify-content:center;">
+                {{ boton_submit }}
+            </button>
+            <a href="{% url 'pokemon-lista' %}" class="btn btn-outline">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const urlInput = document.querySelector('input[name="imagen_url"]');
+    if (!urlInput) return;
+    const preview = document.createElement('img');
+    preview.style.cssText = 'width:120px; height:120px; object-fit:contain; margin-top:0.5rem; border-radius:12px;';
+    urlInput.parentNode.appendChild(preview);
+    urlInput.addEventListener('input', function () {
+        if (urlInput.value) preview.src = urlInput.value;
+    });
+});
+</script>
+{% endblock %}

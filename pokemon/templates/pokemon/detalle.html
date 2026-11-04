@@ -1,0 +1,86 @@
+{% extends "pokemon/base.html" %}
+{% load static %}
+
+{% block titulo %}{{ pokemon.nombre }}{% endblock %}
+
+{% block contenido %}
+<div class="detalle-header">
+    {% if pokemon.imagen_url %}
+        <img src="{{ pokemon.imagen_url }}" alt="{{ pokemon.nombre }}" class="detalle-img"
+             onerror="this.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/{{ pokemon.numero }}.png'">
+    {% else %}
+        <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/{{ pokemon.numero }}.png"
+             alt="{{ pokemon.nombre }}" class="detalle-img">
+    {% endif %}
+
+    <div class="detalle-info">
+        <p style="color:var(--azul); font-weight:800; letter-spacing:0.1em;">#{{ pokemon.numero|stringformat:"03d" }}</p>
+        <h2>{{ pokemon.nombre }}</h2>
+        <div style="margin: 0.7rem 0;">
+            <span class="badge-tipo {{ pokemon.tipo }}" style="font-size:1rem; padding:0.4rem 1.1rem;">
+                {{ pokemon.tipo }}
+            </span>
+            {% if pokemon.tipo_secundario %}
+            <span class="badge-tipo {{ pokemon.tipo_secundario }}" style="font-size:1rem; padding:0.4rem 1.1rem;">
+                {{ pokemon.tipo_secundario }}
+            </span>
+            {% endif %}
+        </div>
+
+        <div class="descripcion-pokedex">
+            "{{ pokemon.descripcion|default:"Este Pokémon es un misterio para los científicos." }}"
+        </div>
+
+        <h3 style="margin-bottom:0.5rem;">📊 Estadísticas base</h3>
+        <div class="barra-stat">
+            <span class="label">HP</span>
+            <span class="base">{{ pokemon.hp }}</span>
+            <div class="barra-container"><div class="barra-fill" data-base="{{ pokemon.hp }}" style="width:0"></div></div>
+        </div>
+        <div class="barra-stat">
+            <span class="label">Ataque</span>
+            <span class="base">{{ pokemon.ataque }}</span>
+            <div class="barra-container"><div class="barra-fill" data-base="{{ pokemon.ataque }}" style="width:0"></div></div>
+        </div>
+        <div class="barra-stat">
+            <span class="label">Defensa</span>
+            <span class="base">{{ pokemon.defensa }}</span>
+            <div class="barra-container"><div class="barra-fill" data-base="{{ pokemon.defensa }}" style="width:0"></div></div>
+        </div>
+        <div class="barra-stat">
+            <span class="label">Velocidad</span>
+            <span class="base">{{ pokemon.velocidad }}</span>
+            <div class="barra-container"><div class="barra-fill" data-base="{{ pokemon.velocidad }}" style="width:0"></div></div>
+        </div>
+
+        <p style="margin-top:1rem;">
+            <strong>Total: {{ total_stats }}</strong> / 1020
+        </p>
+
+        <div style="display:flex; gap:0.7rem; margin-top:1.2rem; flex-wrap:wrap;">
+            <a href="{% url 'pokemon-editar' pokemon.pk %}" class="btn btn-primary">✏️ Editar</a>
+            <a href="{% url 'pokemon-eliminar' pokemon.pk %}" class="btn btn-danger">🗑️ Liberar</a>
+            <a href="{% url 'pokemon-lista' %}" class="btn btn-outline" style="color:#1a1a2e; border-color:#ccc;">← Volver</a>
+        </div>
+    </div>
+</div>
+
+{% if habilidades %}
+<h3 style="margin:2rem 0 1rem;">⚔️ Habilidades aprendidas</h3>
+<div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:1rem;">
+    {% for h in habilidades %}
+    <div class="card-pokemon" style="padding:1.2rem;">
+        <h4>{{ h.nombre }}</h4>
+        <span class="badge-tipo {{ h.tipo }}">{{ h.tipo }}</span>
+        {% if h.potencia > 0 %}<p style="margin-top:0.5rem; font-size:0.9rem;">Potencia: <strong>{{ h.potencia }}</strong></p>{% endif %}
+        {% if h.descripcion %}<p style="font-size:0.85rem; color:#555; margin-top:0.4rem;">{{ h.descripcion }}</p>{% endif %}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+{% if not habilidades %}
+<p style="text-align:center; color:rgba(255,255,255,0.5); margin-top:2rem;">
+    Este Pokémon aún no tiene habilidades registradas.
+</p>
+{% endif %}
+{% endblock %}

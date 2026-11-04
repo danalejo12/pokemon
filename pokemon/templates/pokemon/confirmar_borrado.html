@@ -1,0 +1,22 @@
+{% extends "pokemon/base.html" %}
+
+{% block titulo %}Liberar Pokémon{% endblock %}
+
+{% block contenido %}
+<div class="confirm-card">
+    <div style="font-size:4rem;">💨</div>
+    <h2>¿Liberar a {{ pokemon.nombre }}?</h2>
+    <p style="color:rgba(255,255,255,0.8); margin-bottom:1.5rem;">
+        #{{ pokemon.numero|stringformat:"03d" }} — {{ pokemon.tipos_display }}<br>
+        Esta acción no se puede deshacer.
+    </p>
+
+    <form method="post">
+        {% csrf_token %}
+        <div style="display:flex; gap:0.8rem; justify-content:center;">
+            <button type="submit" class="btn btn-danger">😢 Sí, liberarlo</button>
+            <a href="{% url 'pokemon-detalle' pokemon.pk %}" class="btn btn-outline">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
