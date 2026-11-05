@@ -1,0 +1,24 @@
+{% extends "pokemon/base.html" %}
+
+{% block titulo %}Entrenadores{% endblock %}
+
+{% block contenido %}
+<h2 style="text-align:center;">🧢 Entrenadores ({{ entrenadores|length }})</h2>
+
+<div class="grid-entrenadores">
+    {% for e in entrenadores %}
+    <article class="panel">
+        <h3><a href="{% url 'entrenador-detalle' e.pk %}">{{ e.nombre }}</a></h3>
+        <p class="panel-desc">{{ e.edad }} años · {{ e.ciudad_origen }}{% if e.region %} ({{ e.region }}){% endif %}</p>
+        <p>🏅 {{ e.medallas.all|length }} medalla{{ e.medallas.all|length|pluralize }}</p>
+        <div class="mini-grid">
+            {% for p in e.equipo.all %}
+                {% include "pokemon/_mini_pokemon.html" with p=p %}
+            {% endfor %}
+        </div>
+    </article>
+    {% empty %}
+    <p style="text-align:center;">No hay entrenadores. Corre <code>python manage.py seed</code>.</p>
+    {% endfor %}
+</div>
+{% endblock %}

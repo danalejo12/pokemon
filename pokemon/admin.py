@@ -1,7 +1,7 @@
 # Configuración del panel de administrador de Django.
 # Aquí defines cómo se ven los modelos en /admin/.
 from django.contrib import admin
-from .models import Pokemon, Habilidad
+from .models import Pokemon, Habilidad, Region, Gimnasio, Entrenador
 
 
 @admin.register(Pokemon)
@@ -32,3 +32,30 @@ class HabilidadAdmin(admin.ModelAdmin):
     list_filter = ('tipo',)
     search_fields = ('nombre', 'descripcion')
     filter_horizontal = ('pokemones',)  # Widget para M2M.
+
+
+class GimnasioInline(admin.TabularInline):
+    """Permite editar los gimnasios desde la página de la región."""
+    model = Gimnasio
+    extra = 0
+
+
+@admin.register(Region)
+class RegionAdmin(admin.ModelAdmin):
+    list_display = ('nombre', 'generacion')
+    inlines = [GimnasioInline]
+
+
+@admin.register(Gimnasio)
+class GimnasioAdmin(admin.ModelAdmin):
+    list_display = ('orden', 'nombre', 'ciudad', 'lider', 'tipo', 'medalla', 'region')
+    list_filter = ('region', 'tipo')
+    search_fields = ('nombre', 'ciudad', 'lider')
+
+
+@admin.register(Entrenador)
+class EntrenadorAdmin(admin.ModelAdmin):
+    list_display = ('nombre', 'edad', 'ciudad_origen', 'region')
+    list_filter = ('region',)
+    search_fields = ('nombre',)
+    filter_horizontal = ('equipo', 'medallas')

@@ -163,6 +163,12 @@ Abre en el navegador: **http://127.0.0.1:8000/**
 | `/<id>/` | Ficha de detalle de un Pokémon (ej: `/4/` = Pikachu) |
 | `/<id>/editar/` | Editar un Pokémon existente |
 | `/<id>/eliminar/` | Confirmar y eliminar un Pokémon |
+| `/importar/` | Importar un Pokémon desde [PokeAPI](https://pokeapi.co/) por nombre o número |
+| `/regiones/` | Regiones (Kanto y Johto) con sus 8 gimnasios cada una |
+| `/regiones/<id>/` | Detalle de una región: gimnasios y entrenadores |
+| `/gimnasios/<id>/` | Detalle de un gimnasio y quién ganó su medalla |
+| `/entrenadores/` | Los 15 entrenadores con su equipo y medallas |
+| `/entrenadores/<id>/` | Ficha de un entrenador |
 | `/admin/` | Panel de administración de Django |
 
 > **Nota:** el `<id>` de la URL es el **ID interno** de la base de datos, no el número Pokedex. El número Pokedex (ej: `#025`) es un campo separado dentro de la ficha.
@@ -311,6 +317,32 @@ Las **relaciones** claves:
 
 - Un `Pokemon` puede tener muchas `Habilidad` y viceversa (M2M).
 - Desde un Pokémon accedes con `pokemon.habilidades.all()`.
+
+### `Region`, `Gimnasio` y `Entrenador`
+
+```
+Region 1 ──< N Gimnasio          (gimnasio.region, region.gimnasios)
+Region 1 ──< N Entrenador        (entrenador.region, region.entrenadores)
+Entrenador N >──< N Pokemon      (entrenador.equipo, pokemon.entrenadores)
+Entrenador N >──< N Gimnasio     (entrenador.medallas, gimnasio.vencido_por)
+```
+
+| Modelo | Campos principales |
+|---|---|
+| `Region` | `nombre`, `generacion`, `descripcion` |
+| `Gimnasio` | `nombre`, `ciudad`, `region` (FK), `orden` (1-8, único por región), `lider`, `tipo`, `medalla` |
+| `Entrenador` | `nombre`, `edad`, `ciudad_origen`, `region` (FK), `equipo` (M2M Pokemon), `medallas` (M2M Gimnasio) |
+
+El seed crea 2 regiones, 16 gimnasios (8 por región) y 15 entrenadores.
+
+### Integración con PokeAPI
+
+[pokemon/pokeapi.py](pokemon/pokeapi.py) consulta `https://pokeapi.co/api/v2/pokemon/<nombre>` y `.../pokemon-species/`, traduce los tipos al español, toma la descripción en español y la foto oficial, y guarda el Pokémon (lo actualiza si el número ya existe). Se usa desde la web en `/importar/`, con el botón "Actualizar desde PokeAPI" de cada ficha, o por consola:
+
+```bash
+python manage.py importar_pokeapi pikachu 6 mewtwo
+python manage.py importar_pokeapi --rango 1 151
+```
 
 ---
 

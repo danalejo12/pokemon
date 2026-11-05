@@ -1,0 +1,6 @@
+{# Tarjeta pequeña de un Pokémon. Uso: {% include "pokemon/_mini_pokemon.html" with p=pokemon %} #}
+<a href="{% url 'pokemon-detalle' p.pk %}" class="mini-pokemon" title="{{ p.tipos_display }}">
+    <img src="{{ p.imagen_url|default:'' }}" alt="{{ p.nombre }}" loading="lazy"
+         onerror="this.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/{{ p.numero }}.png'">
+    <span>{{ p.nombre }}</span>
+</a>

@@ -133,3 +133,77 @@ class Habilidad(models.Model):
 
     def __str__(self):
         return f"{self.nombre} ({self.tipo})"
+
+
+class Region(models.Model):
+    """Una región del mundo Pokémon (ej: Kanto, Johto)."""
+    nombre = models.CharField(max_length=50, unique=True)
+    generacion = models.PositiveIntegerField(help_text="Generación en la que aparece")
+    descripcion = models.TextField(blank=True)
+
+    class Meta:
+        ordering = ['generacion']
+        verbose_name = 'Región'
+        verbose_name_plural = 'Regiones'
+
+    def __str__(self):
+        return self.nombre
+
+    def get_absolute_url(self):
+        return reverse('region-detalle', kwargs={'pk': self.pk})
+
+
+class Gimnasio(models.Model):
+    """
+    Un gimnasio Pokémon. Cada región tiene 8 (orden 1 a 8).
+
+    Relación: muchos gimnasios → una región (ForeignKey).
+    """
+    nombre = models.CharField(max_length=80, unique=True)
+    ciudad = models.CharField(max_length=60)
+    # ForeignKey = "pertenece a". Si se borra la región, se borran sus gimnasios.
+    region = models.ForeignKey(Region, on_delete=models.CASCADE, related_name='gimnasios')
+    orden = models.PositiveSmallIntegerField(help_text="Posición en la ruta de gimnasios (1-8)")
+    lider = models.CharField(max_length=50, help_text="Nombre del líder del gimnasio")
+    tipo = models.CharField(max_length=20, choices=Pokemon.TIPO_CHOICES,
+                            help_text="Especialidad del gimnasio")
+    medalla = models.CharField(max_length=50)
+
+    class Meta:
+        ordering = ['region__generacion', 'orden']
+        # No puede haber dos gimnasios con el mismo orden en una región.
+        constraints = [
+            models.UniqueConstraint(fields=['region', 'orden'], name='orden_unico_por_region'),
+        ]
+
+    def __str__(self):
+        return f"{self.nombre} ({self.region})"
+
+
+class Entrenador(models.Model):
+    """
+    Un entrenador Pokémon.
+
+    Relaciones:
+    - region: de dónde viene (ForeignKey → Region).
+    - equipo: sus Pokémon (ManyToMany → Pokemon).
+    - medallas: gimnasios que ha vencido (ManyToMany → Gimnasio).
+    """
+    nombre = models.CharField(max_length=50, unique=True)
+    edad = models.PositiveSmallIntegerField(default=10)
+    ciudad_origen = models.CharField(max_length=60, blank=True)
+    # SET_NULL: si se borra la región, el entrenador queda sin región (no se borra).
+    region = models.ForeignKey(Region, on_delete=models.SET_NULL, null=True, blank=True,
+                               related_name='entrenadores')
+    equipo = models.ManyToManyField(Pokemon, related_name='entrenadores', blank=True)
+    medallas = models.ManyToManyField(Gimnasio, related_name='vencido_por', blank=True)
+
+    class Meta:
+        ordering = ['nombre']
+        verbose_name_plural = 'Entrenadores'
+
+    def __str__(self):
+        return self.nombre
+
+    def get_absolute_url(self):
+        return reverse('entrenador-detalle', kwargs={'pk': self.pk})

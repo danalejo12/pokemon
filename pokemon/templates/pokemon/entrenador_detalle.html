@@ -1,0 +1,33 @@
+{% extends "pokemon/base.html" %}
+
+{% block titulo %}{{ entrenador.nombre }}{% endblock %}
+
+{% block contenido %}
+<section class="panel">
+    <h2>🧢 {{ entrenador.nombre }}</h2>
+    <p class="panel-desc">
+        {{ entrenador.edad }} años · {{ entrenador.ciudad_origen }}
+        {% if entrenador.region %}· <a href="{% url 'region-detalle' entrenador.region.pk %}">{{ entrenador.region }}</a>{% endif %}
+    </p>
+
+    <h3>Equipo</h3>
+    <div class="mini-grid">
+        {% for p in entrenador.equipo.all %}
+            {% include "pokemon/_mini_pokemon.html" with p=p %}
+        {% empty %}
+            <p>Sin Pokémon todavía.</p>
+        {% endfor %}
+    </div>
+
+    <h3 style="margin-top:1.5rem;">🏅 Medallas ({{ entrenador.medallas.count }})</h3>
+    <div class="grid-gimnasios">
+        {% for g in entrenador.medallas.all %}
+            {% include "pokemon/_gimnasio.html" with g=g %}
+        {% empty %}
+            <p>Todavía no ha ganado ninguna medalla.</p>
+        {% endfor %}
+    </div>
+
+    <p style="margin-top:1.5rem;"><a href="{% url 'entrenador-lista' %}" class="btn btn-outline">← Todos los entrenadores</a></p>
+</section>
+{% endblock %}

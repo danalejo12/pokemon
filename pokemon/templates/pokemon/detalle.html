@@ -61,7 +61,20 @@
             <a href="{% url 'pokemon-editar' pokemon.pk %}" class="btn btn-primary">✏️ Editar</a>
             <a href="{% url 'pokemon-eliminar' pokemon.pk %}" class="btn btn-danger">🗑️ Liberar</a>
             <a href="{% url 'pokemon-lista' %}" class="btn btn-outline" style="color:#1a1a2e; border-color:#ccc;">← Volver</a>
+            <form method="post" action="{% url 'pokemon-importar' %}" style="display:inline;">
+                {% csrf_token %}
+                <input type="hidden" name="busqueda" value="{{ pokemon.numero }}">
+                <button type="submit" class="btn btn-outline" style="color:#1a1a2e; border-color:#ccc;">🌐 Actualizar desde PokeAPI</button>
+            </form>
         </div>
+
+        {% with entrenadores=pokemon.entrenadores.all %}
+        {% if entrenadores %}
+        <p style="margin-top:1.2rem;"><strong>🧢 En el equipo de:</strong>
+            {% for e in entrenadores %}<a href="{% url 'entrenador-detalle' e.pk %}" style="color:var(--azul);">{{ e.nombre }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}
+        </p>
+        {% endif %}
+        {% endwith %}
     </div>
 </div>
 

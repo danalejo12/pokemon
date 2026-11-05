@@ -1,0 +1,22 @@
+{% extends "pokemon/base.html" %}
+
+{% block titulo %}Regiones{% endblock %}
+
+{% block contenido %}
+<h2 style="text-align:center;">🗺️ Regiones y gimnasios</h2>
+
+{% for region in regiones %}
+<section class="panel">
+    <h3><a href="{% url 'region-detalle' region.pk %}">{{ region.nombre }}</a>
+        <small>Generación {{ region.generacion }} · {{ region.entrenadores.all|length }} entrenadores</small></h3>
+    <p class="panel-desc">{{ region.descripcion }}</p>
+    <div class="grid-gimnasios">
+        {% for g in region.gimnasios.all %}
+            {% include "pokemon/_gimnasio.html" with g=g %}
+        {% endfor %}
+    </div>
+</section>
+{% empty %}
+<p style="text-align:center;">No hay regiones. Corre <code>python manage.py seed</code>.</p>
+{% endfor %}
+{% endblock %}

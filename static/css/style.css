@@ -419,3 +419,62 @@ footer {
     .detalle-img { width: 180px; height: 180px; }
     .hero-stats { flex-direction: column; align-items: center; }
 }
+
+/* ── Mensaje de error (PokeAPI) ── */
+.messages .error { background: rgba(227,53,13,0.25); border: 1px solid var(--rojo); }
+
+/* ── Regiones, gimnasios y entrenadores ── */
+.panel {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+.panel h2, .panel h3 { margin-bottom: 0.4rem; }
+.panel h2 small, .panel h3 small { font-size: 0.85rem; font-weight: 400; color: rgba(255,255,255,0.6); margin-left: 0.5rem; }
+.panel a { color: var(--pikachu); }
+.panel-desc { color: rgba(255,255,255,0.7); margin-bottom: 1rem; }
+.grid-gimnasios {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 0.8rem;
+}
+.card-gimnasio {
+    display: flex; gap: 0.8rem; align-items: center;
+    background: #fff; color: var(--negro) !important;
+    border-radius: 12px; padding: 0.8rem 1rem;
+    text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.card-gimnasio:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); }
+.card-gimnasio h4 { font-size: 1rem; }
+.card-gimnasio p { font-size: 0.85rem; color: var(--gris); }
+.card-gimnasio .orden {
+    flex: none; width: 2.2rem; height: 2.2rem; border-radius: 50%;
+    display: grid; place-items: center; font-weight: 900;
+    background: var(--pikachu); color: var(--negro);
+}
+.grid-entrenadores {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1rem;
+}
+.grid-entrenadores .panel { margin-bottom: 0; }
+.mini-grid { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.6rem; }
+.mini-pokemon {
+    display: flex; flex-direction: column; align-items: center;
+    width: 76px; padding: 0.3rem;
+    background: rgba(255,255,255,0.9); border-radius: 10px;
+    color: var(--negro) !important; text-decoration: none; font-size: 0.72rem; font-weight: 700;
+}
+.mini-pokemon img { width: 60px; height: 60px; object-fit: contain; }
+.chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.chip {
+    padding: 0.3rem 0.9rem; border-radius: 999px;
+    background: rgba(255,203,5,0.15); border: 1px solid var(--pikachu);
+    text-decoration: none; font-weight: 600;
+}
+@media (max-width: 600px) {
+    .grid-entrenadores, .grid-gimnasios { grid-template-columns: 1fr; }
+}

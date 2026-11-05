@@ -19,7 +19,8 @@ from django.views.generic import (
 )
 from django.urls import reverse_lazy
 from django.contrib import messages
-from .models import Pokemon
+from .models import Pokemon, Region, Gimnasio, Entrenador
+from .pokeapi import PokeAPIError, importar_pokemon
 from .forms import PokemonForm
 
 
@@ -178,3 +179,69 @@ def inicio(request):
     }
     # render() mezcla el template con los datos del contexto.
     return render(request, 'pokemon/inicio.html', context)
+
+
+# ┌─────────────────────────────────────────────────────────────┐
+# │  REGIONES, GIMNASIOS Y ENTRENADORES                         │
+# └─────────────────────────────────────────────────────────────┘
+class RegionListView(ListView):
+    """Lista las regiones con sus 8 gimnasios."""
+    model = Region
+    template_name = 'pokemon/regiones.html'
+    context_object_name = 'regiones'
+
+    def get_queryset(self):
+        # prefetch_related trae gimnasios y entrenadores en pocas consultas.
+        return Region.objects.prefetch_related('gimnasios', 'entrenadores')
+
+
+class RegionDetailView(DetailView):
+    model = Region
+    template_name = 'pokemon/region_detalle.html'
+    context_object_name = 'region'
+
+
+class GimnasioDetailView(DetailView):
+    """Un gimnasio y los entrenadores que ganaron su medalla."""
+    model = Gimnasio
+    template_name = 'pokemon/gimnasio_detalle.html'
+    context_object_name = 'gimnasio'
+
+
+class EntrenadorListView(ListView):
+    model = Entrenador
+    template_name = 'pokemon/entrenadores.html'
+    context_object_name = 'entrenadores'
+
+    def get_queryset(self):
+        return Entrenador.objects.select_related('region').prefetch_related('equipo', 'medallas')
+
+
+class EntrenadorDetailView(DetailView):
+    """Ficha del entrenador: su equipo de Pokémon y sus medallas."""
+    model = Entrenador
+    template_name = 'pokemon/entrenador_detalle.html'
+    context_object_name = 'entrenador'
+
+
+# ┌─────────────────────────────────────────────────────────────┐
+# │  POKEAPI — importar un Pokémon desde https://pokeapi.co/    │
+# └─────────────────────────────────────────────────────────────┘
+def importar_pokeapi(request):
+    """
+    GET: muestra el formulario de búsqueda.
+    POST: consulta PokeAPI, guarda el Pokémon y redirige a su ficha.
+    """
+    if request.method == 'POST':
+        busqueda = request.POST.get('busqueda', '')
+        try:
+            pokemon, creado = importar_pokemon(busqueda)
+        except PokeAPIError as e:
+            messages.error(request, str(e))
+            return render(request, 'pokemon/importar.html', {'busqueda': busqueda})
+        if creado:
+            messages.success(request, f"¡{pokemon.nombre} llegó desde PokeAPI!")
+        else:
+            messages.info(request, f"{pokemon.nombre} se actualizó con los datos de PokeAPI.")
+        return redirect(pokemon)
+    return render(request, 'pokemon/importar.html')

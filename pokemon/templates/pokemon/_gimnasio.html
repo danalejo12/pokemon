@@ -1,0 +1,9 @@
+{# Tarjeta de un gimnasio. Uso: {% include "pokemon/_gimnasio.html" with g=gimnasio %} #}
+<a href="{% url 'gimnasio-detalle' g.pk %}" class="card-gimnasio">
+    <span class="orden">{{ g.orden }}</span>
+    <div>
+        <h4>{{ g.nombre }}</h4>
+        <p>📍 {{ g.ciudad }} · Líder: <strong>{{ g.lider }}</strong></p>
+        <p><span class="badge-tipo {{ g.tipo }}">{{ g.tipo }}</span> 🏅 {{ g.medalla }}</p>
+    </div>
+</a>

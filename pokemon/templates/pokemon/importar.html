@@ -1,0 +1,20 @@
+{% extends "pokemon/base.html" %}
+
+{% block titulo %}Importar desde PokeAPI{% endblock %}
+
+{% block contenido %}
+<section class="panel" style="max-width:600px; margin:0 auto; text-align:center;">
+    <h2>🌐 Importar desde PokeAPI</h2>
+    <p class="panel-desc">
+        Escribe el nombre (en inglés) o el número de cualquier Pokémon. Traemos sus tipos,
+        stats, descripción en español y foto oficial desde
+        <a href="https://pokeapi.co/" target="_blank" rel="noopener">pokeapi.co</a>.
+    </p>
+    <form method="post" class="busqueda" style="justify-content:center;">
+        {% csrf_token %}
+        <input type="text" name="busqueda" value="{{ busqueda|default:'' }}"
+               placeholder="ej: bulbasaur, 25, lucario" required autofocus>
+        <button type="submit" class="btn btn-primary">Importar</button>
+    </form>
+</section>
+{% endblock %}

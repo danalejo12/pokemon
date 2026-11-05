@@ -1,0 +1,25 @@
+{% extends "pokemon/base.html" %}
+
+{% block titulo %}{{ gimnasio.nombre }}{% endblock %}
+
+{% block contenido %}
+<section class="panel">
+    <h2>{{ gimnasio.nombre }} <small>Gimnasio n.º {{ gimnasio.orden }} de
+        <a href="{% url 'region-detalle' gimnasio.region.pk %}">{{ gimnasio.region }}</a></small></h2>
+    <p>📍 {{ gimnasio.ciudad }}</p>
+    <p>👤 Líder: <strong>{{ gimnasio.lider }}</strong></p>
+    <p>Especialidad: <span class="badge-tipo {{ gimnasio.tipo }}">{{ gimnasio.tipo }}</span></p>
+    <p>🏅 {{ gimnasio.medalla }}</p>
+
+    <h3 style="margin-top:1.5rem;">Entrenadores que ganaron la medalla</h3>
+    <div class="chips">
+        {% for e in gimnasio.vencido_por.all %}
+        <a href="{% url 'entrenador-detalle' e.pk %}" class="chip">{{ e.nombre }}</a>
+        {% empty %}
+        <p>Nadie ha vencido este gimnasio todavía.</p>
+        {% endfor %}
+    </div>
+
+    <p style="margin-top:1.5rem;"><a href="{% url 'region-detalle' gimnasio.region.pk %}" class="btn btn-outline">← Volver a {{ gimnasio.region }}</a></p>
+</section>
+{% endblock %}
